@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Anima em CSV</title>
+    <title>Anima 3D (Coordenadas CSV)</title>
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎬</text></svg>">
     <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 
@@ -226,12 +226,10 @@
 </head>
 <body>
 
-<!-- CANVAS -->
 <div id="canvas-container"></div>
 
-<!-- TOP BAR -->
 <div id="topbar">
-    <div class="brand">Anima <span>CSV</span></div>
+    <div class="brand">Anima <span>3D</span></div>
     <div class="divider"></div>
 
     <div class="tab-group">
@@ -241,7 +239,6 @@
 
     <div class="divider"></div>
 
-    <!-- Transform -->
     <div class="tab-group" id="transform-tabs">
         <button class="tab-btn active" id="t-move" onclick="setMode('translate')">↔ Mover</button>
         <button class="tab-btn" id="t-rot" onclick="setMode('rotate')">↻ Girar</button>
@@ -251,19 +248,17 @@
     <div class="topbar-actions">
         <button class="btn" onclick="zoomToFit()" title="Ajustar visão">⛶</button>
         <button class="btn" onclick="resetCamera()" title="Reset câmera">🏠</button>
-        <label class="btn" title="Importar CSV">
-            📂 CSV
+        <label class="btn" title="Importar Coordenadas CSV">
+            📂 Importar CSV
             <input type="file" accept=".csv" onchange="importCSV(event)">
         </label>
-        <button class="btn success" onclick="exportCSV()">⬇ Exportar CSV</button>
-        <button class="btn primary" onclick="exportHTML()">💾 Salvar HTML</button>
+        <button class="btn success" onclick="exportCSV()" title="Salva os dados de posição e cor">⬇ Exportar Coordenadas (CSV)</button>
+        <button class="btn primary" onclick="exportHTML()" title="Salva a cena jogável">💾 Salvar HTML Interativo</button>
         <button class="btn danger" onclick="clearScene()">🗑 Limpar</button>
     </div>
 </div>
 
-<!-- BUILD PANEL -->
 <div class="panel active" id="build-panel">
-    <!-- Formas -->
     <div class="section">
         <h3>Adicionar Forma</h3>
         <div class="btn-grid">
@@ -276,7 +271,6 @@
         </div>
     </div>
 
-    <!-- Imagem para 3D -->
     <div class="section">
         <h3>🖼 Imagem → Formas</h3>
         <div class="info-box">Carregue uma imagem para gerar formas 3D automaticamente via K-Means.</div>
@@ -290,7 +284,6 @@
         </label>
     </div>
 
-    <!-- Propriedades -->
     <div class="section" id="props-section" style="opacity:.4; pointer-events:none;">
         <h3>Propriedades da Seleção</h3>
         <div class="field-row">
@@ -312,7 +305,6 @@
     </div>
 </div>
 
-<!-- ANIMATION PANEL -->
 <div class="panel" id="anim-panel">
     <div class="section">
         <h3>Padrão de Animação</h3>
@@ -379,13 +371,10 @@
     </div>
 </div>
 
-<!-- NOTIFICATIONS -->
 <div id="notif"></div>
 
-<!-- MODE INDICATOR -->
 <div id="mode-indicator">↔ MOVER · clique para selecionar</div>
 
-<!-- LOADING -->
 <div id="loading-overlay">
     <div class="spinner"></div>
     <span style="font-size:.72rem;color:var(--muted)">Processando imagem...</span>
@@ -749,8 +738,8 @@ window.exportCSV = function() {
         const deg = THREE.MathUtils.radToDeg;
         csv += `${id},${label},${typeBase},${p.x.toFixed(2)},${p.y.toFixed(2)},${p.z.toFixed(2)},${deg(r.x).toFixed(2)},${deg(r.y).toFixed(2)},${deg(r.z).toFixed(2)},${s.x.toFixed(2)},${s.y.toFixed(2)},${s.z.toFixed(2)},#${obj.material.color.getHexString()}\n`;
     });
-    downloadBlob(new Blob([csv], {type:'text/csv'}), 'anima_em_csv.csv');
-    notify('CSV exportado ✓');
+    downloadBlob(new Blob([csv], {type:'text/csv'}), 'coordenadas_3d.csv');
+    notify('Coordenadas CSV exportadas ✓');
 };
 
 // ── EXPORT HTML (with animation baked in) ──
@@ -777,7 +766,8 @@ window.exportHTML = function() {
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Anima CSV — ${pattern}</title>
+<title>Anima 3D — ${pattern}</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎬</text></svg>">
 <style>
   body { margin:0; overflow:hidden; background:#0b0c10; font-family:monospace; }
   #info { position:absolute;top:14px;left:14px;color:#e8ff47;font-size:.75rem;z-index:10;background:rgba(0,0,0,.7);padding:8px 14px;border-radius:8px;border:1px solid rgba(232,255,71,.2); }
@@ -786,7 +776,7 @@ window.exportHTML = function() {
 <script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"}}<\/script>
 </head>
 <body>
-<div id="info">Anima <b>CSV</b> — padrão: <b>${pattern}</b><br><small>pressione teclas para reagir!</small></div>
+<div id="info">Anima <b>3D</b> — padrão: <b>${pattern}</b><br><small>pressione teclas para reagir!</small></div>
 <script type="module">
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
@@ -896,7 +886,7 @@ window.addEventListener('resize',()=>{ camera.aspect=innerWidth/innerHeight; cam
 </body>
 </html>`;
 
-    downloadBlob(new Blob([html], {type:'text/html'}), `anima_csv_${pattern}.html`);
+    downloadBlob(new Blob([html], {type:'text/html'}), `anima_3d_${pattern}.html`);
     notify('HTML salvo ✓');
 };
 
