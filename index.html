@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Anima 3D (Coordenadas CSV)</title>
+    <title>Anima 3D (Voxels e CSV)</title>
+    <!-- Favicon -->
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎬</text></svg>">
     <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 
@@ -88,7 +89,7 @@
         /* ── PANELS ── */
         .panel {
             position: absolute; top: 58px; left: 14px;
-            width: 260px; max-height: calc(100vh - 72px);
+            width: 270px; max-height: calc(100vh - 72px);
             background: rgba(11,12,16,0.92);
             backdrop-filter: blur(14px);
             border: 1px solid var(--border);
@@ -109,10 +110,11 @@
             margin-bottom: 10px;
         }
 
-        .section { margin-bottom: 16px; }
+        .section { margin-bottom: 16px; border-bottom: 1px solid var(--border); padding-bottom: 16px; }
+        .section:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
 
-        .field-row { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
-        .field-row label { font-size: 0.65rem; color: var(--muted); white-space: nowrap; min-width: 60px; }
+        .field-row { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
+        .field-row label { font-size: 0.65rem; color: var(--muted); white-space: nowrap; min-width: 65px; }
 
         input[type="number"], input[type="text"], select {
             background: var(--surface2); border: 1px solid var(--border);
@@ -132,42 +134,16 @@
         .btn-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
         .btn-grid .btn { padding: 7px 4px; text-align: center; font-size: 0.65rem; }
 
-        .full-btn {
-            width: 100%; text-align: center; display: block;
-        }
-
-        .transform-row { display: flex; gap: 4px; margin-bottom: 10px; }
-        .transform-row .btn { flex: 1; padding: 5px 2px; text-align: center; font-size: 0.65rem; }
-        .transform-row .btn.active { background: var(--accent); color: #000; border-color: var(--accent); }
+        .full-btn { width: 100%; text-align: center; display: block; }
 
         .info-box {
             background: var(--surface2); border-left: 3px solid var(--accent2);
             padding: 8px 10px; border-radius: 0 6px 6px 0;
             font-size: 0.65rem; color: var(--muted); line-height: 1.6;
-            margin-bottom: 10px;
+            margin-bottom: 12px;
         }
 
-        /* ── ANIMATION PANEL (RIGHT SIDE) ── */
-        #anim-panel {
-            left: auto; right: 14px; width: 240px;
-        }
-
-        .pattern-grid {
-            display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-bottom: 10px;
-        }
-        .pattern-btn {
-            background: var(--surface2); border: 1px solid var(--border);
-            border-radius: 8px; padding: 10px 6px; cursor: pointer;
-            text-align: center; transition: all .2s; color: var(--text);
-            font-family: 'Space Mono', monospace; font-size: 0.6rem;
-        }
-        .pattern-btn:hover { border-color: var(--accent); color: var(--accent); }
-        .pattern-btn.active { border-color: var(--accent); background: rgba(232,255,71,0.08); color: var(--accent); }
-        .pattern-btn .icon { font-size: 1.2rem; display: block; margin-bottom: 4px; }
-
-        .anim-controls { display: flex; flex-direction: column; gap: 8px; }
-        .slider-row { display: flex; align-items: center; gap: 8px; }
-        .slider-row label { font-size: 0.62rem; color: var(--muted); min-width: 64px; }
+        /* Range Sliders */
         input[type="range"] {
             -webkit-appearance: none; flex: 1; height: 4px;
             background: var(--surface2); border-radius: 2px; outline: none;
@@ -179,7 +155,21 @@
         }
         .slider-val { font-size: 0.62rem; color: var(--accent); min-width: 24px; text-align: right; }
 
-        .play-stop { display: flex; gap: 8px; margin-top: 4px; }
+        /* ── ANIMATION PANEL (RIGHT SIDE) ── */
+        #anim-panel { left: auto; right: 14px; width: 240px; }
+
+        .pattern-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-bottom: 10px; }
+        .pattern-btn {
+            background: var(--surface2); border: 1px solid var(--border);
+            border-radius: 8px; padding: 10px 6px; cursor: pointer;
+            text-align: center; transition: all .2s; color: var(--text);
+            font-family: 'Space Mono', monospace; font-size: 0.6rem;
+        }
+        .pattern-btn:hover { border-color: var(--accent); color: var(--accent); }
+        .pattern-btn.active { border-color: var(--accent); background: rgba(232,255,71,0.08); color: var(--accent); }
+        .pattern-btn .icon { font-size: 1.2rem; display: block; margin-bottom: 4px; }
+
+        .play-stop { display: flex; gap: 8px; margin-top: 10px; }
         .play-stop .btn { flex: 1; text-align: center; padding: 8px 0; font-size: 0.75rem; }
 
         /* ── NOTIFICATIONS ── */
@@ -228,6 +218,7 @@
 
 <div id="canvas-container"></div>
 
+<!-- TOP BAR -->
 <div id="topbar">
     <div class="brand">Anima <span>3D</span></div>
     <div class="divider"></div>
@@ -252,47 +243,55 @@
             📂 Importar CSV
             <input type="file" accept=".csv" onchange="importCSV(event)">
         </label>
-        <button class="btn success" onclick="exportCSV()" title="Salva os dados de posição e cor">⬇ Exportar Coordenadas (CSV)</button>
-        <button class="btn primary" onclick="exportHTML()" title="Salva a cena jogável">💾 Salvar HTML Interativo</button>
+        <button class="btn success" onclick="exportCSV()" title="Salvar matrizes">⬇ Exportar CSV</button>
+        <button class="btn primary" onclick="exportHTML()" title="Salvar widget embed para alunos">💾 Exportar Widget HTML</button>
         <button class="btn danger" onclick="clearScene()">🗑 Limpar</button>
     </div>
 </div>
 
+<!-- BUILD PANEL -->
 <div class="panel active" id="build-panel">
+    
+    <!-- Imagem para 3D (VOXELS) -->
     <div class="section">
-        <h3>Adicionar Forma</h3>
-        <div class="btn-grid">
-            <button class="btn" onclick="addShape('box')">⬛ Caixa</button>
-            <button class="btn" onclick="addShape('sphere')">⚪ Esfera</button>
-            <button class="btn" onclick="addShape('cylinder')">🛢 Cilindro</button>
-            <button class="btn" onclick="addShape('cone')">🔺 Cone</button>
-            <button class="btn" onclick="addShape('torus')">⭕ Torus</button>
-            <button class="btn" onclick="addShape('tetra')">💎 Pirâmide</button>
-        </div>
-    </div>
-
-    <div class="section">
-        <h3>🖼 Imagem → Formas</h3>
-        <div class="info-box">Carregue uma imagem para gerar formas 3D automaticamente via K-Means.</div>
+        <h3>🖼 Imagem → 3D (Voxels)</h3>
+        <div class="info-box">Converte a imagem em blocos 3D precisos. Mantém o formato e cores exatas.</div>
+        
         <div class="field-row">
-            <label>Elementos</label>
-            <input type="number" id="k-parts" value="6" min="1" max="40">
+            <label title="Define o quão detalhada a imagem 3D será. Valores altos podem pesar.">Resolução</label>
+            <input type="range" id="img-res" min="10" max="80" step="1" value="35" oninput="document.getElementById('sv-res').textContent=this.value">
+            <span class="slider-val" id="sv-res">35</span>
         </div>
-        <label class="btn full-btn" style="cursor:pointer; text-align:center; display:block;">
+        
+        <div class="field-row">
+            <label title="Limiar de Extração: Pixels com transparência abaixo deste valor são ignorados.">Limiar Alfa</label>
+            <input type="range" id="img-thresh" min="1" max="255" step="1" value="50" oninput="document.getElementById('sv-thresh').textContent=this.value">
+            <span class="slider-val" id="sv-thresh">50</span>
+        </div>
+
+        <label class="btn full-btn primary" style="cursor:pointer; display:block; margin-top:8px;">
             🖼 Upload Imagem
             <input type="file" accept="image/*" onchange="handleImageUpload(event)">
         </label>
     </div>
 
+    <!-- Formas -->
+    <div class="section">
+        <h3>Adicionar Formas Básicas</h3>
+        <div class="btn-grid">
+            <button class="btn" onclick="addShape('box')">⬛ Caixa</button>
+            <button class="btn" onclick="addShape('sphere')">⚪ Esfera</button>
+            <button class="btn" onclick="addShape('cylinder')">🛢 Cilindro</button>
+            <button class="btn" onclick="addShape('cone')">🔺 Cone</button>
+        </div>
+    </div>
+
+    <!-- Propriedades -->
     <div class="section" id="props-section" style="opacity:.4; pointer-events:none;">
         <h3>Propriedades da Seleção</h3>
         <div class="field-row">
             <label>Cor</label>
             <input type="color" id="color-picker" value="#47c4ff" onchange="changeColor(this.value)">
-        </div>
-        <div class="field-row">
-            <label>Rótulo</label>
-            <input type="text" id="label-input" placeholder="nome..." onchange="changeLabel(this.value)">
         </div>
         <div class="field-row">
             <label>Z Pos</label>
@@ -301,59 +300,54 @@
                 <button class="btn" style="flex:1;font-size:.62rem;" onclick="moveZ(1)">↗ Frente</button>
             </div>
         </div>
-        <button class="btn danger full-btn" style="font-size:.65rem;" onclick="deleteSelected()">🗑 Deletar Selecionado</button>
+        <button class="btn danger full-btn" style="font-size:.65rem; margin-top: 8px;" onclick="deleteSelected()">🗑 Deletar Selecionado</button>
     </div>
 </div>
 
+<!-- ANIMATION PANEL -->
 <div class="panel" id="anim-panel">
     <div class="section">
-        <h3>Padrão de Animação</h3>
+        <h3>Padrão de Animação (Sutil)</h3>
+        <div class="info-box">Efeitos leves centrados na forma original para não desfigurar o modelo.</div>
         <div class="pattern-grid">
             <div class="pattern-btn active" onclick="selectPattern('wave')" id="pat-wave">
                 <span class="icon">〰️</span>Onda
             </div>
             <div class="pattern-btn" onclick="selectPattern('spin')" id="pat-spin">
-                <span class="icon">🌀</span>Rotação
+                <span class="icon">🌀</span>Giro
             </div>
             <div class="pattern-btn" onclick="selectPattern('explode')" id="pat-explode">
-                <span class="icon">💥</span>Explosão
+                <span class="icon">💥</span>Pulsação
             </div>
             <div class="pattern-btn" onclick="selectPattern('pulse')" id="pat-pulse">
-                <span class="icon">💓</span>Pulso
+                <span class="icon">💓</span>Brilho
             </div>
             <div class="pattern-btn" onclick="selectPattern('float')" id="pat-float">
                 <span class="icon">🎈</span>Flutuar
             </div>
             <div class="pattern-btn" onclick="selectPattern('chaos')" id="pat-chaos">
-                <span class="icon">⚡</span>Caos
+                <span class="icon">⚡</span>Tremor
             </div>
             <div class="pattern-btn" onclick="selectPattern('helix')" id="pat-helix">
                 <span class="icon">🧬</span>Hélice
             </div>
             <div class="pattern-btn" onclick="selectPattern('bounce')" id="pat-bounce">
-                <span class="icon">🏀</span>Bounce
+                <span class="icon">🏀</span>Salto
             </div>
         </div>
     </div>
 
     <div class="section">
         <h3>Controles</h3>
-        <div class="anim-controls">
-            <div class="slider-row">
-                <label>Velocidade</label>
-                <input type="range" id="sl-speed" min="0.1" max="5" step="0.1" value="1" oninput="animParams.speed=+this.value; document.getElementById('sv-speed').textContent=this.value">
-                <span class="slider-val" id="sv-speed">1</span>
-            </div>
-            <div class="slider-row">
-                <label>Intensidade</label>
-                <input type="range" id="sl-intensity" min="0.1" max="5" step="0.1" value="1.5" oninput="animParams.intensity=+this.value; document.getElementById('sv-int').textContent=this.value">
-                <span class="slider-val" id="sv-int">1.5</span>
-            </div>
-            <div class="slider-row">
-                <label>Câmera Auto</label>
-                <input type="range" id="sl-cam" min="0" max="1" step="0.1" value="0.3" oninput="animParams.camSpeed=+this.value; document.getElementById('sv-cam').textContent=this.value">
-                <span class="slider-val" id="sv-cam">0.3</span>
-            </div>
+        <div class="slider-row" style="margin-bottom:8px;">
+            <label>Velocidade</label>
+            <input type="range" id="sl-speed" min="0.1" max="3" step="0.1" value="1" oninput="animParams.speed=+this.value; document.getElementById('sv-speed').textContent=this.value">
+            <span class="slider-val" id="sv-speed">1</span>
+        </div>
+        <div class="slider-row">
+            <label>Câmera Auto</label>
+            <input type="range" id="sl-cam" min="0" max="1" step="0.1" value="0.3" oninput="animParams.camSpeed=+this.value; document.getElementById('sv-cam').textContent=this.value">
+            <span class="slider-val" id="sv-cam">0.3</span>
         </div>
 
         <div class="play-stop">
@@ -361,23 +355,14 @@
             <button class="btn" onclick="resetAnim()">⏹ RESET</button>
         </div>
     </div>
-
-    <div class="section">
-        <h3>Teclado Reativo</h3>
-        <div class="info-box">
-            Com PLAY ativo, pressione qualquer tecla para disparar reações nas formas!<br><br>
-            Cada tecla tem cor e força diferentes.
-        </div>
-    </div>
 </div>
 
 <div id="notif"></div>
-
 <div id="mode-indicator">↔ MOVER · clique para selecionar</div>
 
 <div id="loading-overlay">
     <div class="spinner"></div>
-    <span style="font-size:.72rem;color:var(--muted)">Processando imagem...</span>
+    <span style="font-size:.72rem;color:var(--muted)">Processando voxels da imagem...</span>
 </div>
 
 <script type="module">
@@ -390,9 +375,7 @@ let scene, camera, renderer, orbit, transformCtrl;
 let objects = [];
 let selectedObj = null;
 let elementCounter = 1;
-let currentTab = 'build';
 
-// Animation state
 let isPlaying = false;
 let animTime = 0;
 let currentPattern = 'wave';
@@ -400,7 +383,7 @@ let basePositions = [];
 let baseRotations = [];
 let baseScales = [];
 
-window.animParams = { speed: 1, intensity: 1.5, camSpeed: 0.3 };
+window.animParams = { speed: 1, intensity: 1.0, camSpeed: 0.3 };
 
 const raycaster = new THREE.Raycaster();
 const mouse = new THREE.Vector2();
@@ -409,27 +392,27 @@ const mouse = new THREE.Vector2();
 function init() {
     const container = document.getElementById('canvas-container');
     scene = new THREE.Scene();
-    scene.background = new THREE.Color(0x0b0c10);
-    scene.fog = new THREE.Fog(0x0b0c10, 80, 200);
+    scene.background = new THREE.Color(0x0b0c10); // Fundo escuro na edição
+    
+    // Luzes aprimoradas para melhor visualização dos Voxels
+    scene.add(new THREE.AmbientLight(0xffffff, 0.7));
+    const dir1 = new THREE.DirectionalLight(0xffffff, 1.2);
+    dir1.position.set(15, 25, 20);
+    scene.add(dir1);
+    const dir2 = new THREE.DirectionalLight(0xffffff, 0.5);
+    dir2.position.set(-15, -15, -20);
+    scene.add(dir2);
 
-    // Lights
-    scene.add(new THREE.AmbientLight(0xffffff, 0.5));
-    const dir = new THREE.DirectionalLight(0xffffff, 1.8);
-    dir.position.set(15, 25, 10);
-    scene.add(dir);
-    const fill = new THREE.DirectionalLight(0x47c4ff, 0.4);
-    fill.position.set(-15, -5, -10);
-    scene.add(fill);
-
-    // Grid
+    // Grid (apenas na edição)
     const grid = new THREE.GridHelper(100, 60, 0x1c1f2b, 0x13151c);
     grid.position.y = -6;
+    grid.name = "EditorGrid";
     scene.add(grid);
 
     camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 10000);
-    camera.position.set(0, 12, 35);
+    camera.position.set(0, 12, 45);
 
-    renderer = new THREE.WebGLRenderer({ antialias: true, preserveDrawingBuffer: true });
+    renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, preserveDrawingBuffer: true });
     renderer.setPixelRatio(window.devicePixelRatio);
     renderer.setSize(window.innerWidth, window.innerHeight);
     container.appendChild(renderer.domElement);
@@ -458,23 +441,23 @@ function animate() {
         animTime += 0.016 * animParams.speed;
         applyPattern(currentPattern);
 
-        // Auto camera orbit
         const cs = animParams.camSpeed;
         if (cs > 0) {
-            const r = orbit.getDistance ? orbit.getDistance() : 35;
             camera.position.x += (-Math.sin(animTime * cs * 0.15) * 0.3 - camera.position.x) * 0.02;
         }
     }
 
-    // Label billboard
+    // Atualiza Rótulos
     objects.forEach(obj => {
-        if (obj.children.length > 0) obj.children[0].quaternion.copy(camera.quaternion);
+        if (obj.children.length > 0 && obj.children[0].isSprite) {
+            obj.children[0].quaternion.copy(camera.quaternion);
+        }
     });
 
     renderer.render(scene, camera);
 }
 
-// ── PATTERNS ──
+// ── PATTERNS (SUTIS E CENTRADOS) ──
 function snapshotPositions() {
     basePositions = objects.map(o => o.position.clone());
     baseRotations = objects.map(o => o.rotation.clone());
@@ -483,64 +466,58 @@ function snapshotPositions() {
 
 function applyPattern(pattern) {
     const T = animTime;
-    const I = animParams.intensity;
+    // Intensidade super reduzida para não quebrar a forma da imagem
+    const I = animParams.intensity * 0.15; 
 
     objects.forEach((obj, i) => {
         if (!basePositions[i]) return;
         const bp = basePositions[i];
+        const br = baseRotations[i];
         const bs = baseScales[i];
-        const phase = i * 0.55;
+        
+        // Fase baseada na posição do bloco para criar um efeito harmonioso contínuo
+        const phase = (bp.x * 0.1) + (bp.y * 0.1);
 
         switch(pattern) {
             case 'wave':
-                obj.position.y = bp.y + Math.sin(T * 2 + phase) * I * 1.5;
-                obj.rotation.z = Math.sin(T + phase) * 0.3 * I;
+                // Ondulação suave em Y
+                obj.position.y = bp.y + Math.sin(T * 3 + phase) * I * 2;
                 break;
             case 'spin':
-                obj.rotation.y = T * I * 1.5 + phase;
-                obj.rotation.x = Math.sin(T + phase) * 0.4 * I;
-                obj.position.y = bp.y + Math.sin(T * 1.5 + phase) * I * 0.5;
+                // Gira levemente em torno do próprio eixo
+                obj.rotation.y = br.y + Math.sin(T * 2 + phase) * I * 3;
                 break;
-            case 'explode': {
-                const r = 1 + Math.sin(T * 1.2) * 0.5;
-                const ang = phase * 6;
-                obj.position.x = bp.x + Math.cos(ang) * T * I * 0.3 * r;
-                obj.position.y = bp.y + Math.sin(ang) * T * I * 0.3 * r;
-                obj.position.z = bp.z + Math.sin(T + phase) * I;
-                break; }
-            case 'pulse': {
-                const sc = 1 + Math.sin(T * 3 + phase) * 0.35 * I;
+            case 'explode': 
+                // Pulsação para fora e para dentro a partir do centro da geometria
+                const dist = Math.sqrt(bp.x*bp.x + bp.y*bp.y + bp.z*bp.z) || 1;
+                const push = Math.sin(T * 2) * I * 2;
+                obj.position.x = bp.x + (bp.x / dist) * push;
+                obj.position.y = bp.y + (bp.y / dist) * push;
+                break;
+            case 'pulse': 
+                // Aumenta e diminui a escala levemente
+                const sc = 1 + Math.sin(T * 4 + phase) * 0.2;
                 obj.scale.set(bs.x * sc, bs.y * sc, bs.z * sc);
-                const bright = 0.5 + Math.sin(T * 3 + phase) * 0.5;
-                obj.material.emissiveIntensity = bright * I * 0.5;
-                break; }
-            case 'float':
-                obj.position.y = bp.y + Math.sin(T * 0.9 + phase) * I * 2;
-                obj.rotation.y += 0.008 * I;
-                obj.rotation.z = Math.sin(T * 0.7 + phase) * 0.15;
                 break;
-            case 'chaos': {
-                const f = 2 + Math.sin(phase);
-                obj.position.x = bp.x + Math.sin(T * f + phase) * I * 1.5;
-                obj.position.y = bp.y + Math.cos(T * (f + 0.3) + phase) * I * 1.5;
-                obj.rotation.x += 0.03 * I;
-                obj.rotation.y += 0.02 * I;
-                break; }
-            case 'helix': {
-                const helixR = 3 + i * 0.5;
-                const helixAngle = T * 1.5 + (i / objects.length) * Math.PI * 4;
-                obj.position.x = Math.cos(helixAngle) * helixR * I * 0.7;
-                obj.position.z = bp.z + Math.sin(helixAngle) * helixR * I * 0.7;
-                obj.position.y = bp.y + Math.sin(T * 2 + phase) * I;
-                obj.rotation.y = helixAngle;
-                break; }
-            case 'bounce': {
-                const t = ((T * 2 + phase) % (Math.PI * 2));
-                const bounce = Math.abs(Math.sin(t)) * I * 3;
+            case 'float':
+                // Flutuação orgânica tridimensional
+                obj.position.y = bp.y + Math.sin(T * 1.5 + phase) * I * 1.5;
+                obj.position.x = bp.x + Math.cos(T * 1.2 + phase) * I * 1.0;
+                break;
+            case 'chaos': 
+                // Tremor leve
+                obj.position.x = bp.x + (Math.random() - 0.5) * I * 1.5;
+                obj.position.y = bp.y + (Math.random() - 0.5) * I * 1.5;
+                break;
+            case 'helix': 
+                // Movimento para frente e para trás
+                obj.position.z = bp.z + Math.sin(T * 3 + phase) * I * 5;
+                break;
+            case 'bounce': 
+                // Pulinho contido
+                const bounce = Math.abs(Math.sin(T * 3 + phase)) * I * 3;
                 obj.position.y = bp.y + bounce;
-                const squash = 1 - bounce * 0.1;
-                obj.scale.set(bs.x / squash, bs.y * squash, bs.z / squash);
-                break; }
+                break;
         }
     });
 }
@@ -555,28 +532,19 @@ function resetAnimPositions() {
     });
 }
 
-// ── KEYBOARD REACTIVE ──
-const keyColors = {
-    a: 0xe8ff47, s: 0x47c4ff, d: 0xff6b6b, f: 0xb47cff,
-    j: 0xff9b3b, k: 0x4bff8a, l: 0xff4bdf, ' ': 0xffffff
-};
-
+const keyColors = { a: 0xe8ff47, s: 0x47c4ff, d: 0xff6b6b, f: 0xb47cff, ' ': 0xffffff };
 function onKeyDown(e) {
     if (!isPlaying || objects.length === 0) return;
     const col = keyColors[e.key.toLowerCase()] || (Math.random() * 0xffffff | 0);
-    const force = animParams.intensity;
     objects.forEach((obj, i) => {
-        if (Math.random() > 0.6) {
+        if (Math.random() > 0.8) {
             obj.material.emissive = new THREE.Color(col);
-            obj.material.emissiveIntensity = 0.8;
-            setTimeout(() => { if (obj.material) obj.material.emissiveIntensity = 0; }, 300);
-            if (!basePositions[i]) return;
-            obj.position.y = basePositions[i].y + (Math.random() - 0.5) * force * 4;
+            obj.material.emissiveIntensity = 0.5;
+            setTimeout(() => { if (obj.material) obj.material.emissiveIntensity = 0; }, 200);
         }
     });
 }
 
-// ── POINTER / SELECTION ──
 function onPointerDown(e) {
     if (transformCtrl.dragging) return;
     mouse.x = (e.clientX / window.innerWidth) * 2 - 1;
@@ -593,53 +561,44 @@ function selectObject(obj) {
         transformCtrl.attach(obj);
         pp.style.opacity = '1'; pp.style.pointerEvents = 'auto';
         document.getElementById('color-picker').value = '#' + obj.material.color.getHexString();
-        document.getElementById('label-input').value = obj.userData.label || '';
     } else {
         transformCtrl.detach();
         pp.style.opacity = '.4'; pp.style.pointerEvents = 'none';
     }
 }
 
-// ── SPRITES ──
 function makeSprite(text) {
     const c = document.createElement('canvas');
-    c.width = c.height = 128;
+    c.width = c.height = 64;
     const ctx = c.getContext('2d');
-    ctx.font = 'bold 42px Arial';
+    ctx.font = 'bold 24px Arial';
     ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-    ctx.strokeStyle = 'rgba(0,0,0,.8)'; ctx.lineWidth = 4;
-    ctx.strokeText(text, 64, 64);
-    ctx.fillStyle = 'rgba(232,255,71,.95)';
-    ctx.fillText(text, 64, 64);
-    const sprite = new THREE.Sprite(new THREE.SpriteMaterial({ map: new THREE.CanvasTexture(c), depthTest: false, transparent: true }));
-    sprite.scale.set(1.8, 1.8, 1);
+    ctx.fillStyle = 'rgba(255,255,255,0.8)';
+    ctx.fillText(text, 32, 32);
+    const sprite = new THREE.Sprite(new THREE.SpriteMaterial({ map: new THREE.CanvasTexture(c), depthTest: false }));
+    sprite.scale.set(1.5, 1.5, 1);
     return sprite;
 }
 
-// ── ADD SHAPE ──
 window.addShape = function(type) {
-    const s = 3;
+    const s = 4;
     let geo, typeLabel;
     if (type === 'box')      { geo = new THREE.BoxGeometry(s, s, s); typeLabel = 'Caixa'; }
     else if (type === 'sphere')   { geo = new THREE.SphereGeometry(s/1.6, 32, 16); typeLabel = 'Esfera'; }
     else if (type === 'cylinder') { geo = new THREE.CylinderGeometry(s/2, s/2, s*1.5, 32); typeLabel = 'Cilindro'; }
     else if (type === 'cone')     { geo = new THREE.ConeGeometry(s/1.5, s*1.5, 32); typeLabel = 'Cone'; }
-    else if (type === 'torus')    { geo = new THREE.TorusGeometry(s/1.8, s/5, 16, 50); typeLabel = 'Torus'; }
-    else if (type === 'tetra')    { geo = new THREE.TetrahedronGeometry(s/1.4); typeLabel = 'Pirâmide'; }
 
-    const mat = new THREE.MeshStandardMaterial({ color: Math.random() * 0xffffff, roughness: 0.4, metalness: 0.15, emissive: 0x000000, emissiveIntensity: 0 });
+    const mat = new THREE.MeshStandardMaterial({ color: Math.random() * 0xffffff, roughness: 0.3, metalness: 0.2, emissive: 0x000000 });
     const mesh = new THREE.Mesh(geo, mat);
     mesh.userData = { id: elementCounter++, label: typeLabel, typeBase: typeLabel };
-    mesh.add(makeSprite(mesh.userData.id.toString()));
+    if (objects.length < 50) mesh.add(makeSprite(mesh.userData.id.toString()));
     scene.add(mesh);
     objects.push(mesh);
     selectObject(mesh);
     notify('Forma adicionada ✓');
 };
 
-// ── CHANGE COLOR / LABEL ──
 window.changeColor = function(v) { if (selectedObj) { selectedObj.material.color.set(v); } };
-window.changeLabel = function(v) { if (selectedObj) { selectedObj.userData.label = v; } };
 window.moveZ = function(d) { if (selectedObj) { selectedObj.position.z += d; } };
 window.deleteSelected = function() {
     if (!selectedObj) return;
@@ -649,7 +608,6 @@ window.deleteSelected = function() {
     notify('Deletado');
 };
 
-// ── TRANSFORM MODE ──
 window.setMode = function(mode) {
     transformCtrl.setMode(mode);
     ['move','rot','scale'].forEach(m => document.getElementById('t-'+m)?.classList.remove('active'));
@@ -659,8 +617,7 @@ window.setMode = function(mode) {
         { translate: '↔ MOVER', rotate: '↻ GIRAR', scale: '⤡ ESCALAR' }[mode] + ' · clique para selecionar';
 };
 
-// ── CAMERA ──
-window.resetCamera = function() { camera.position.set(0, 12, 35); orbit.target.set(0,0,0); orbit.update(); };
+window.resetCamera = function() { camera.position.set(0, 12, 45); orbit.target.set(0,0,0); orbit.update(); };
 window.zoomToFit = function() {
     if (!objects.length) return;
     const box = new THREE.Box3();
@@ -668,14 +625,11 @@ window.zoomToFit = function() {
     const center = box.getCenter(new THREE.Vector3());
     const size = box.getSize(new THREE.Vector3());
     const maxDim = Math.max(size.x, size.y, size.z);
-    const fov = camera.fov * Math.PI / 180;
-    const camZ = Math.abs(maxDim / 2 / Math.tan(fov / 2)) * 1.6;
-    camera.position.set(center.x, center.y + maxDim * 0.2, center.z + camZ);
+    camera.position.set(center.x, center.y, center.z + maxDim * 1.5);
     orbit.target.copy(center);
     orbit.update();
 };
 
-// ── CLEAR ──
 window.clearScene = function() {
     if (!confirm('Limpar toda a cena?')) return;
     objects.forEach(o => { scene.remove(o); o.geometry.dispose(); o.material.dispose(); });
@@ -685,6 +639,87 @@ window.clearScene = function() {
     resetCamera();
     notify('Cena limpa');
 };
+
+// ── IMAGE TO 3D (VOXELS EXATOS) ──
+window.handleImageUpload = function(e) {
+    const file = e.target.files[0]; if (!file) return;
+    document.getElementById('loading-overlay').classList.add('show');
+    const reader = new FileReader();
+    reader.onload = evt => {
+        const img = new Image();
+        img.onload = () => { 
+            setTimeout(() => { 
+                const res = +document.getElementById('img-res').value || 35;
+                const alpha = +document.getElementById('img-thresh').value || 50;
+                processImageToVoxels(img, res, alpha); 
+                document.getElementById('loading-overlay').classList.remove('show'); 
+            }, 50); 
+        };
+        img.src = evt.target.result;
+    };
+    reader.readAsDataURL(file);
+    e.target.value = '';
+};
+
+function processImageToVoxels(img, resolution, alphaThresh) {
+    // Escala base para manter o modelo num tamanho visível agradável
+    const physicalSize = 40; 
+    let w = img.width, h = img.height;
+    const aspect = w / h;
+    
+    // Calcula o grid mantendo a proporção correta
+    let cols = resolution;
+    let rows = Math.floor(resolution / aspect);
+    if (rows > resolution) {
+        rows = resolution;
+        cols = Math.floor(resolution * aspect);
+    }
+
+    const cvs = document.createElement('canvas');
+    cvs.width = cols; cvs.height = rows;
+    const ctx = cvs.getContext('2d');
+    
+    // Desenha a imagem reduzida no canvas para capturar a média das cores (Voxelização)
+    ctx.drawImage(img, 0, 0, cols, rows);
+    const imgd = ctx.getImageData(0, 0, cols, rows).data;
+
+    const blockSize = physicalSize / Math.max(cols, rows);
+    const gap = 0.05; // Leve respiro entre os blocos
+    const geometry = new THREE.BoxGeometry(blockSize - gap, blockSize - gap, blockSize - gap);
+    
+    let added = 0;
+
+    for (let y = 0; y < rows; y++) {
+        for (let x = 0; x < cols; x++) {
+            const idx = (y * cols + x) * 4;
+            const r = imgd[idx], g = imgd[idx+1], b = imgd[idx+2], a = imgd[idx+3];
+
+            // Filtro de extração baseado no controle Alfa e na eliminação do fundo
+            if (a >= alphaThresh) {
+                // Previne gerar voxels que sejam 100% brancos (geralmente fundos que sobraram)
+                if (r > 250 && g > 250 && b > 250 && alphaThresh < 250) continue;
+
+                const posX = (x - cols/2) * blockSize;
+                const posY = -(y - rows/2) * blockSize;
+
+                const col = new THREE.Color(r/255, g/255, b/255);
+                // Material levemente reflexivo
+                const mat = new THREE.MeshStandardMaterial({ color: col, roughness: 0.5, metalness: 0.1 });
+                const mesh = new THREE.Mesh(geometry, mat);
+                
+                mesh.position.set(posX, posY, 0);
+                mesh.userData = { id: elementCounter++, label: `Voxel_${added}`, typeBase: 'Caixa' };
+                
+                scene.add(mesh); 
+                objects.push(mesh);
+                added++;
+            }
+        }
+    }
+
+    notify(`${added} blocos gerados mantendo cores exatas ✓`);
+    zoomToFit();
+}
 
 // ── IMPORT CSV ──
 window.importCSV = function(e) {
@@ -696,29 +731,17 @@ window.importCSV = function(e) {
         for (let i = 1; i < lines.length; i++) {
             const line = lines[i].trim(); if (!line) continue;
             const c = line.split(','); if (c.length < 13) continue;
-            const tipo = (c[2] || '').trim();
             const px = +c[3]||0, py = +c[4]||0, pz = +c[5]||0;
-            const rx = (+c[6]||0)*Math.PI/180, ry = (+c[7]||0)*Math.PI/180, rz = (+c[8]||0)*Math.PI/180;
             const sx = +c[9]||1, sy = +c[10]||1, sz = +c[11]||1;
             let color = c[12]?.trim() || '#ffffff';
             if (!color.startsWith('#')) color = '#ffffff';
 
-            let geo;
-            if (tipo.toLowerCase().includes('esfera')) geo = new THREE.SphereGeometry(1, 32, 16);
-            else if (tipo.toLowerCase().includes('cilindro')) geo = new THREE.CylinderGeometry(0.5,0.5,1,32);
-            else if (tipo.toLowerCase().includes('cone')) geo = new THREE.ConeGeometry(0.5,1,32);
-            else if (tipo.toLowerCase().includes('torus')) geo = new THREE.TorusGeometry(0.6,0.25,16,50);
-            else geo = new THREE.BoxGeometry(1,1,1);
-
-            const mat = new THREE.MeshStandardMaterial({ color, roughness:0.4, metalness:0.15, emissive:0x000000, emissiveIntensity:0 });
+            const geo = new THREE.BoxGeometry(1,1,1);
+            const mat = new THREE.MeshStandardMaterial({ color, roughness:0.5 });
             const mesh = new THREE.Mesh(geo, mat);
             mesh.position.set(px, py, pz);
-            mesh.rotation.set(rx, ry, rz);
             mesh.scale.set(sx, sy, sz);
-            mesh.userData = { id: elementCounter++, label: c[1]?.trim() || 'Item', typeBase: tipo };
-            mesh.add(makeSprite(mesh.userData.id.toString()));
-            scene.add(mesh);
-            objects.push(mesh);
+            scene.add(mesh); objects.push(mesh);
             added++;
         }
         notify(`${added} objetos importados ✓`);
@@ -735,63 +758,56 @@ window.exportCSV = function() {
     objects.forEach(obj => {
         const { id, label, typeBase } = obj.userData;
         const p = obj.position, r = obj.rotation, s = obj.scale;
-        const deg = THREE.MathUtils.radToDeg;
-        csv += `${id},${label},${typeBase},${p.x.toFixed(2)},${p.y.toFixed(2)},${p.z.toFixed(2)},${deg(r.x).toFixed(2)},${deg(r.y).toFixed(2)},${deg(r.z).toFixed(2)},${s.x.toFixed(2)},${s.y.toFixed(2)},${s.z.toFixed(2)},#${obj.material.color.getHexString()}\n`;
+        csv += `${id},${label},${typeBase},${p.x.toFixed(2)},${p.y.toFixed(2)},${p.z.toFixed(2)},0,0,0,${s.x.toFixed(2)},${s.y.toFixed(2)},${s.z.toFixed(2)},#${obj.material.color.getHexString()}\n`;
     });
-    downloadBlob(new Blob([csv], {type:'text/csv'}), 'coordenadas_3d.csv');
-    notify('Coordenadas CSV exportadas ✓');
+    downloadBlob(new Blob([csv], {type:'text/csv'}), 'coordenadas.csv');
+    notify('CSV exportado ✓');
 };
 
-// ── EXPORT HTML (with animation baked in) ──
+// ── EXPORT WIDGET HTML (Para Professores) ──
 window.exportHTML = function() {
     if (!objects.length) { notify('Cena vazia!'); return; }
 
-    // Serialize objects
     const objData = objects.map(obj => ({
-        typeBase: obj.userData.typeBase || 'Caixa',
-        label: obj.userData.label || 'Item',
-        id: obj.userData.id,
-        position: { x: obj.position.x, y: obj.position.y, z: obj.position.z },
-        rotation: { x: obj.rotation.x, y: obj.rotation.y, z: obj.rotation.z },
-        scale: { x: obj.scale.x, y: obj.scale.y, z: obj.scale.z },
-        color: '#' + obj.material.color.getHexString()
+        p: { x: obj.position.x, y: obj.position.y, z: obj.position.z },
+        s: { x: obj.scale.x, y: obj.scale.y, z: obj.scale.z },
+        c: '#' + obj.material.color.getHexString()
     }));
 
     const pattern = currentPattern;
     const speed = animParams.speed;
-    const intensity = animParams.intensity;
 
     const html = `<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Anima 3D — ${pattern}</title>
+<title>Widget 3D</title>
+<!-- Favicon incorporado conforme padrão -->
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎬</text></svg>">
 <style>
-  body { margin:0; overflow:hidden; background:#0b0c10; font-family:monospace; }
-  #info { position:absolute;top:14px;left:14px;color:#e8ff47;font-size:.75rem;z-index:10;background:rgba(0,0,0,.7);padding:8px 14px;border-radius:8px;border:1px solid rgba(232,255,71,.2); }
-  #info b { color:#fff; }
+  /* Fundo 100% transparente para incorporar perfeitamente no material didático */
+  body { margin:0; overflow:hidden; background:transparent; }
+  canvas { display: block; outline: none; }
 </style>
 <script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"}}<\/script>
 </head>
 <body>
-<div id="info">Anima <b>3D</b> — padrão: <b>${pattern}</b><br><small>pressione teclas para reagir!</small></div>
 <script type="module">
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 
 const scene = new THREE.Scene();
-scene.background = new THREE.Color(0x0b0c10);
-scene.fog = new THREE.Fog(0x0b0c10, 80, 200);
-scene.add(new THREE.AmbientLight(0xffffff, 0.5));
-const d = new THREE.DirectionalLight(0xffffff,1.8); d.position.set(15,25,10); scene.add(d);
-const f = new THREE.DirectionalLight(0x47c4ff,0.4); f.position.set(-15,-5,-10); scene.add(f);
-const grid = new THREE.GridHelper(100,60,0x1c1f2b,0x13151c); grid.position.y=-6; scene.add(grid);
+// Scene background removido para garantir a transparência
+scene.add(new THREE.AmbientLight(0xffffff, 0.7));
+const d = new THREE.DirectionalLight(0xffffff,1.2); d.position.set(15,25,20); scene.add(d);
+const f = new THREE.DirectionalLight(0xffffff,0.5); f.position.set(-15,-15,-20); scene.add(f);
 
 const camera = new THREE.PerspectiveCamera(45, innerWidth/innerHeight, 0.1, 10000);
-camera.position.set(0,12,35);
-const renderer = new THREE.WebGLRenderer({antialias:true});
+camera.position.set(0,0,55);
+
+// Alpha: true ativa a transparência total no fundo do WebGL
+const renderer = new THREE.WebGLRenderer({antialias:true, alpha:true});
 renderer.setPixelRatio(devicePixelRatio); renderer.setSize(innerWidth,innerHeight);
 document.body.appendChild(renderer.domElement);
 const orbit = new OrbitControls(camera, renderer.domElement);
@@ -799,40 +815,24 @@ orbit.enableDamping = true;
 
 const data = ${JSON.stringify(objData)};
 const objects = [];
-const basePos = [], baseRot = [], baseSc = [];
+const basePos = [];
+const baseSc = [];
+
+// Geometria única compartilhada por todos os Voxels para otimizar desempenho
+const geo = new THREE.BoxGeometry(1,1,1);
 
 data.forEach(d => {
-  let geo;
-  const t = (d.typeBase||'').toLowerCase();
-  if(t.includes('esfera')) geo = new THREE.SphereGeometry(1,32,16);
-  else if(t.includes('cilindro')||t.includes('cylinder')) geo = new THREE.CylinderGeometry(0.5,0.5,1,32);
-  else if(t.includes('cone')) geo = new THREE.ConeGeometry(0.5,1,32);
-  else if(t.includes('torus')) geo = new THREE.TorusGeometry(0.6,0.25,16,50);
-  else geo = new THREE.BoxGeometry(1,1,1);
-  const mat = new THREE.MeshStandardMaterial({color:d.color,roughness:0.4,metalness:0.15,emissive:0x000000,emissiveIntensity:0});
+  const mat = new THREE.MeshStandardMaterial({color:d.c, roughness:0.5});
   const mesh = new THREE.Mesh(geo,mat);
-  mesh.position.set(d.position.x,d.position.y,d.position.z);
-  mesh.rotation.set(d.rotation.x,d.rotation.y,d.rotation.z);
-  mesh.scale.set(d.scale.x,d.scale.y,d.scale.z);
+  mesh.position.set(d.p.x,d.p.y,d.p.z);
+  mesh.scale.set(d.s.x,d.s.y,d.s.z);
   scene.add(mesh); objects.push(mesh);
   basePos.push(mesh.position.clone());
-  baseRot.push(mesh.rotation.clone());
   baseSc.push({x:mesh.scale.x,y:mesh.scale.y,z:mesh.scale.z});
 });
 
 let t=0;
-const pattern='${pattern}', speed=${speed}, intensity=${intensity};
-
-window.addEventListener('keydown', e => {
-  const cols=[0xe8ff47,0x47c4ff,0xff6b6b,0xb47cff,0x4bff8a,0xff9b3b];
-  const col=cols[Math.floor(Math.random()*cols.length)];
-  objects.forEach((obj,i)=>{
-    if(Math.random()>.6){
-      obj.material.emissive.setHex(col); obj.material.emissiveIntensity=0.8;
-      setTimeout(()=>{if(obj.material)obj.material.emissiveIntensity=0;},300);
-    }
-  });
-});
+const pattern='${pattern}', speed=${speed}, I=0.15; // Intensidade sutil
 
 window.addEventListener('resize',()=>{ camera.aspect=innerWidth/innerHeight; camera.updateProjectionMatrix(); renderer.setSize(innerWidth,innerHeight); });
 
@@ -840,44 +840,26 @@ window.addEventListener('resize',()=>{ camera.aspect=innerWidth/innerHeight; cam
   requestAnimationFrame(loop);
   orbit.update();
   t += 0.016 * speed;
+  
+  // Auto-rotação contínua da câmera para exibir o objeto como um todo
+  camera.position.x = camera.position.x * Math.cos(0.005) + camera.position.z * Math.sin(0.005);
+  camera.position.z = camera.position.z * Math.cos(0.005) - camera.position.x * Math.sin(0.005);
+  camera.lookAt(0,0,0);
+
   objects.forEach((obj,i)=>{
-    if(!basePos[i]) return;
-    const bp=basePos[i], bs=baseSc[i], ph=i*0.55;
-    const I=intensity;
+    const bp=basePos[i], bs=baseSc[i], ph=(bp.x*0.1)+(bp.y*0.1);
     switch(pattern){
-      case 'wave':
-        obj.position.y=bp.y+Math.sin(t*2+ph)*I*1.5;
-        obj.rotation.z=Math.sin(t+ph)*0.3*I; break;
-      case 'spin':
-        obj.rotation.y=t*I*1.5+ph;
-        obj.rotation.x=Math.sin(t+ph)*0.4*I;
-        obj.position.y=bp.y+Math.sin(t*1.5+ph)*I*0.5; break;
+      case 'wave': obj.position.y=bp.y+Math.sin(t*3+ph)*I*2; break;
+      case 'spin': obj.rotation.y=Math.sin(t*2+ph)*I*3; break;
       case 'explode':{
-        const r=1+Math.sin(t*1.2)*0.5, a=ph*6;
-        obj.position.x=bp.x+Math.cos(a)*t*I*0.3*r;
-        obj.position.y=bp.y+Math.sin(a)*t*I*0.3*r; break;}
-      case 'pulse':{
-        const sc=1+Math.sin(t*3+ph)*0.35*I;
-        obj.scale.set(bs.x*sc,bs.y*sc,bs.z*sc);
-        obj.material.emissiveIntensity=(0.5+Math.sin(t*3+ph)*0.5)*I*0.5; break;}
-      case 'float':
-        obj.position.y=bp.y+Math.sin(t*0.9+ph)*I*2;
-        obj.rotation.y+=0.008*I; break;
-      case 'chaos':
-        obj.position.x=bp.x+Math.sin(t*(2+Math.sin(ph))+ph)*I*1.5;
-        obj.position.y=bp.y+Math.cos(t*(2.3+Math.sin(ph))+ph)*I*1.5;
-        obj.rotation.x+=0.03*I; obj.rotation.y+=0.02*I; break;
-      case 'helix':{
-        const hr=3+i*0.5, ha=t*1.5+(i/objects.length)*Math.PI*4;
-        obj.position.x=Math.cos(ha)*hr*I*0.7;
-        obj.position.z=bp.z+Math.sin(ha)*hr*I*0.7;
-        obj.position.y=bp.y+Math.sin(t*2+ph)*I;
-        obj.rotation.y=ha; break;}
-      case 'bounce':{
-        const bounce=Math.abs(Math.sin(t*2+ph))*I*3;
-        obj.position.y=bp.y+bounce;
-        const sq=1-bounce*0.1;
-        obj.scale.set(bs.x/sq,bs.y*sq,bs.z/sq); break;}
+        const dist = Math.sqrt(bp.x*bp.x + bp.y*bp.y + bp.z*bp.z) || 1;
+        const push = Math.sin(t*2)*I*2;
+        obj.position.x=bp.x+(bp.x/dist)*push; obj.position.y=bp.y+(bp.y/dist)*push; break;}
+      case 'pulse':{ const sc=1+Math.sin(t*4+ph)*0.2; obj.scale.set(bs.x*sc,bs.y*sc,bs.z*sc); break;}
+      case 'float': obj.position.y=bp.y+Math.sin(t*1.5+ph)*I*1.5; obj.position.x=bp.x+Math.cos(t*1.2+ph)*I*1.0; break;
+      case 'chaos': obj.position.x=bp.x+(Math.random()-0.5)*I*1.5; obj.position.y=bp.y+(Math.random()-0.5)*I*1.5; break;
+      case 'helix': obj.position.z=bp.z+Math.sin(t*3+ph)*I*5; break;
+      case 'bounce': obj.position.y=bp.y+Math.abs(Math.sin(t*3+ph))*I*3; break;
     }
   });
   renderer.render(scene,camera);
@@ -886,110 +868,15 @@ window.addEventListener('resize',()=>{ camera.aspect=innerWidth/innerHeight; cam
 </body>
 </html>`;
 
-    downloadBlob(new Blob([html], {type:'text/html'}), `anima_3d_${pattern}.html`);
-    notify('HTML salvo ✓');
+    downloadBlob(new Blob([html], {type:'text/html'}), `widget_3d_${pattern}.html`);
+    notify('Widget HTML exportado ✓');
 };
 
 function downloadBlob(blob, name) {
-    const a = document.createElement('a');
-    a.href = URL.createObjectURL(blob);
-    a.download = name;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
+    const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
+    a.download = name; document.body.appendChild(a); a.click(); document.body.removeChild(a);
 }
 
-// ── IMAGE TO 3D ──
-window.handleImageUpload = function(e) {
-    const file = e.target.files[0]; if (!file) return;
-    document.getElementById('loading-overlay').classList.add('show');
-    const reader = new FileReader();
-    reader.onload = evt => {
-        const img = new Image();
-        img.onload = () => { setTimeout(() => { processImage(img, +document.getElementById('k-parts').value || 6); document.getElementById('loading-overlay').classList.remove('show'); }, 50); };
-        img.src = evt.target.result;
-    };
-    reader.readAsDataURL(file);
-    e.target.value = '';
-};
-
-function processImage(img, k) {
-    const maxDim = 120;
-    let w = img.width, h = img.height;
-    if (w > h) { h = h * (maxDim / w); w = maxDim; } else { w = w * (maxDim / h); h = maxDim; }
-    w = Math.floor(w); h = Math.floor(h);
-    const cvs = document.createElement('canvas');
-    cvs.width = w; cvs.height = h;
-    const ctx = cvs.getContext('2d');
-    ctx.drawImage(img, 0, 0, w, h);
-    const imgd = ctx.getImageData(0, 0, w, h).data;
-
-    let pts = [];
-    for (let y = 0; y < h; y++)
-        for (let x = 0; x < w; x++) {
-            const idx = (y * w + x) * 4;
-            const r = imgd[idx], g = imgd[idx+1], b = imgd[idx+2], a = imgd[idx+3];
-            if (a > 50 && (r < 245 || g < 245 || b < 245)) pts.push({x,y,r,g,b});
-        }
-    if (!pts.length) { notify('Imagem vazia/clara demais'); return; }
-    if (k > pts.length) k = pts.length;
-
-    let centroids = Array.from({length:k}, () => pts[Math.floor(Math.random()*pts.length)]);
-    let clusters = [];
-    for (let it = 0; it < 12; it++) {
-        clusters = Array.from({length:k}, () => []);
-        for (const p of pts) {
-            let min = Infinity, best = 0;
-            for (let i = 0; i < k; i++) {
-                const c = centroids[i], d = (p.x-c.x)**2 + (p.y-c.y)**2;
-                if (d < min) { min = d; best = i; }
-            }
-            clusters[best].push(p);
-        }
-        for (let i = 0; i < k; i++) {
-            if (!clusters[i].length) continue;
-            let sumX=0,sumY=0,sumR=0,sumG=0,sumB=0;
-            clusters[i].forEach(p => { sumX+=p.x; sumY+=p.y; sumR+=p.r; sumG+=p.g; sumB+=p.b; });
-            const l = clusters[i].length;
-            centroids[i] = {x:sumX/l, y:sumY/l, r:sumR/l, g:sumG/l, b:sumB/l};
-        }
-    }
-
-    const sc = 0.2;
-    let added = 0;
-    clusters.forEach((cl, idx) => {
-        if (cl.length < 10) return;
-        let minX=Infinity,maxX=-Infinity,minY=Infinity,maxY=-Infinity;
-        cl.forEach(p => { if(p.x<minX)minX=p.x; if(p.x>maxX)maxX=p.x; if(p.y<minY)minY=p.y; if(p.y>maxY)maxY=p.y; });
-        const rw=maxX-minX, rh=maxY-minY;
-        const cx=minX+rw/2, cy=minY+rh/2;
-        const c = centroids[idx];
-        const posX=(cx-w/2)*sc, posY=-(cy-h/2)*sc;
-        const dW=Math.max(rw*sc,.5), dH=Math.max(rh*sc,.5), dD=Math.min(dW,dH);
-        let geo, typeLabel;
-        if (rw > rh*1.3) {
-            if (Math.abs(c.x-cx)>rw*.12) { geo=new THREE.ConeGeometry(dH/2,dW,32); geo.rotateZ(Math.PI/2); typeLabel='Cone-H'; }
-            else { geo=new THREE.CylinderGeometry(dH/2,dH/2,dW,32); geo.rotateZ(Math.PI/2); typeLabel='Cilindro-H'; }
-        } else if (rh > rw*1.3) {
-            if (Math.abs(c.y-cy)>rh*.12) { geo=new THREE.ConeGeometry(dW/2,dH,32); typeLabel='Cone-V'; }
-            else { geo=new THREE.CylinderGeometry(dW/2,dW/2,dH,32); typeLabel='Cilindro-V'; }
-        } else { geo=new THREE.BoxGeometry(dW,dH,dD); typeLabel='Caixa'; }
-
-        const col = new THREE.Color(c.r/255, c.g/255, c.b/255);
-        const mat = new THREE.MeshStandardMaterial({ color: col, roughness:0.6, metalness:0.1, emissive:0x000000, emissiveIntensity:0 });
-        const mesh = new THREE.Mesh(geo, mat);
-        mesh.position.set(posX, posY, 0);
-        mesh.userData = { id: elementCounter++, label: `Auto_${idx+1}`, typeBase: typeLabel };
-        mesh.add(makeSprite(mesh.userData.id.toString()));
-        scene.add(mesh); objects.push(mesh);
-        added++;
-    });
-
-    notify(`${added} formas geradas da imagem ✓`);
-    zoomToFit();
-}
-
-// ── ANIM CONTROLS ──
 window.selectPattern = function(p) {
     currentPattern = p;
     document.querySelectorAll('.pattern-btn').forEach(b => b.classList.remove('active'));
@@ -1006,7 +893,6 @@ window.toggleAnim = function() {
         document.getElementById('play-btn').style.background = 'rgba(71,196,255,.2)';
         document.getElementById('play-btn').style.borderColor = 'var(--accent2)';
         document.getElementById('play-btn').style.color = 'var(--accent2)';
-        notify('Animação iniciada — ' + currentPattern);
     } else {
         document.getElementById('play-btn').textContent = '▶ PLAY';
         document.getElementById('play-btn').style.background = '';
@@ -1020,12 +906,9 @@ window.resetAnim = function() {
     if (isPlaying) toggleAnim();
     animTime = 0;
     resetAnimPositions();
-    notify('Animação resetada');
 };
 
-// ── TAB SWITCH ──
 window.switchTab = function(tab) {
-    currentTab = tab;
     document.getElementById('build-panel').classList.toggle('active', tab === 'build');
     document.getElementById('anim-panel').classList.toggle('active', tab === 'anim');
     document.getElementById('tab-build').classList.toggle('active', tab === 'build');
@@ -1033,15 +916,12 @@ window.switchTab = function(tab) {
     document.getElementById('transform-tabs').style.display = tab === 'build' ? '' : 'none';
 };
 
-// ── NOTIFY ──
 function notify(msg) {
     const el = document.getElementById('notif');
     el.textContent = msg; el.classList.add('show');
     setTimeout(() => el.classList.remove('show'), 2200);
 }
-window.notify = notify;
 
-// ── RESIZE ──
 function onResize() {
     camera.aspect = window.innerWidth / window.innerHeight;
     camera.updateProjectionMatrix();
