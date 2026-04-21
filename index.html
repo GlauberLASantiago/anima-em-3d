@@ -20,6 +20,7 @@
             --text: #f0f0f0;
             --muted: #6b7280;
             --radius: 10px;
+            --sidebar-w: 320px; /* Largura da barra lateral fixa */
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -31,75 +32,59 @@
             overflow: hidden;
             height: 100vh;
             width: 100vw;
+            display: flex;
         }
 
-        #canvas-container {
-            position: absolute; inset: 0; z-index: 0;
+        /* ── SIDEBAR ── */
+        #sidebar {
+            width: var(--sidebar-w);
+            height: 100vh;
+            background: var(--surface);
+            border-right: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            z-index: 30;
+            box-shadow: 2px 0 10px rgba(0,0,0,0.3);
         }
 
-        /* ── TOP BAR ── */
-        #topbar {
-            position: absolute; top: 0; left: 0; right: 0; z-index: 20;
-            display: flex; align-items: center; gap: 8px;
-            padding: 10px 14px;
-            background: rgba(11,12,16,0.92);
-            backdrop-filter: blur(14px);
+        .sidebar-header {
+            padding: 16px;
             border-bottom: 1px solid var(--border);
-            overflow-x: auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
         .brand {
             font-family: 'Syne', sans-serif;
-            font-weight: 800; font-size: 1.1rem;
+            font-weight: 800; font-size: 1.4rem;
             letter-spacing: -0.5px;
             white-space: nowrap;
         }
         .brand span { color: var(--accent); }
 
-        .divider { width: 1px; height: 24px; background: var(--border); flex-shrink: 0; margin: 0 4px; }
-
-        .tab-group {
-            display: flex; border: 1px solid var(--border); border-radius: 8px; overflow: hidden; flex-shrink: 0;
+        .sidebar-tabs {
+            display: flex;
+            border-bottom: 1px solid var(--border);
+            background: var(--surface2);
         }
+
         .tab-btn {
+            flex: 1;
             background: transparent; border: none; color: var(--muted);
-            font-family: 'Space Mono', monospace; font-size: 0.7rem;
-            padding: 6px 12px; cursor: pointer; transition: all .2s;
-            white-space: nowrap;
+            font-family: 'Space Mono', monospace; font-size: 0.75rem;
+            padding: 12px; cursor: pointer; transition: all .2s;
+            white-space: nowrap; border-bottom: 2px solid transparent;
         }
-        .tab-btn.active { background: var(--accent); color: #000; font-weight: 700; }
-        .tab-btn:hover:not(.active) { background: var(--surface2); color: var(--text); }
+        .tab-btn.active { color: var(--accent); font-weight: 700; border-bottom-color: var(--accent); background: rgba(232,255,71,0.05); }
+        .tab-btn:hover:not(.active) { color: var(--text); background: rgba(255,255,255,0.02); }
 
-        .topbar-actions { display: flex; gap: 6px; margin-left: auto; align-items: center; flex-shrink: 0; }
-
-        .btn {
-            font-family: 'Space Mono', monospace; font-size: 0.7rem;
-            border: 1px solid var(--border); border-radius: 7px;
-            background: var(--surface2); color: var(--text);
-            padding: 6px 12px; cursor: pointer; transition: all .18s;
-            white-space: nowrap;
-            display: flex; align-items: center; justify-content: center; gap: 4px;
-        }
-        .btn:hover { border-color: var(--accent); color: var(--accent); }
-        .btn.primary { background: var(--accent); color: #000; border-color: var(--accent); font-weight: 700; }
-        .btn.primary:hover { background: #d4e840; }
-        .btn.danger { background: rgba(255,107,107,0.15); border-color: var(--accent3); color: var(--accent3); }
-        .btn.danger:hover { background: var(--accent3); color: #fff; }
-        .btn.success { background: rgba(71,196,255,0.12); border-color: var(--accent2); color: var(--accent2); }
-        .btn.success:hover { background: var(--accent2); color: #000; }
-
-        /* ── PANELS ── */
+        /* ── PANELS (Dentro da Sidebar) ── */
         .panel {
-            position: absolute; top: 58px; left: 14px;
-            width: 270px; max-height: calc(100vh - 72px);
-            background: rgba(11,12,16,0.92);
-            backdrop-filter: blur(14px);
-            border: 1px solid var(--border);
-            border-radius: var(--radius);
-            padding: 14px;
+            flex: 1;
             overflow-y: auto;
             overflow-x: hidden;
-            z-index: 15;
+            padding: 16px;
             display: none;
         }
         .panel.active { display: block; }
@@ -109,10 +94,10 @@
         .panel h3 {
             font-family: 'Syne', sans-serif; font-size: 0.75rem;
             color: var(--muted); text-transform: uppercase; letter-spacing: 1.5px;
-            margin-bottom: 10px;
+            margin-bottom: 12px;
         }
 
-        .section { margin-bottom: 16px; border-bottom: 1px solid var(--border); padding-bottom: 16px; }
+        .section { margin-bottom: 20px; border-bottom: 1px solid var(--border); padding-bottom: 20px; }
         .section:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
 
         .field-row { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
@@ -135,31 +120,43 @@
         input[type="checkbox"] { cursor: pointer; accent-color: var(--accent); }
 
         .btn-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
-        .btn-grid .btn { padding: 7px 4px; text-align: center; font-size: 0.65rem; }
+        
+        .btn {
+            font-family: 'Space Mono', monospace; font-size: 0.7rem;
+            border: 1px solid var(--border); border-radius: 7px;
+            background: var(--surface2); color: var(--text);
+            padding: 7px 12px; cursor: pointer; transition: all .18s;
+            white-space: nowrap;
+            display: flex; align-items: center; justify-content: center; gap: 4px;
+        }
+        .btn:hover { border-color: var(--accent); color: var(--accent); }
+        .btn.primary { background: var(--accent); color: #000; border-color: var(--accent); font-weight: 700; }
+        .btn.primary:hover { background: #d4e840; }
+        .btn.danger { background: rgba(255,107,107,0.15); border-color: var(--accent3); color: var(--accent3); }
+        .btn.danger:hover { background: var(--accent3); color: #fff; }
+        .btn.success { background: rgba(71,196,255,0.12); border-color: var(--accent2); color: var(--accent2); }
+        .btn.success:hover { background: var(--accent2); color: #000; }
 
         .full-btn { width: 100%; text-align: center; display: block; }
 
         .info-box {
-            background: var(--surface2); border-left: 3px solid var(--accent2);
-            padding: 8px 10px; border-radius: 0 6px 6px 0;
+            background: rgba(71,196,255,0.05); border-left: 3px solid var(--accent2);
+            padding: 10px; border-radius: 0 6px 6px 0;
             font-size: 0.65rem; color: var(--muted); line-height: 1.6;
-            margin-bottom: 12px;
+            margin-bottom: 14px;
         }
 
         /* Range Sliders */
         input[type="range"] {
             -webkit-appearance: none; flex: 1; height: 4px;
-            background: var(--surface2); border-radius: 2px; outline: none;
+            background: var(--border); border-radius: 2px; outline: none;
             border: none; padding: 0;
         }
         input[type="range"]::-webkit-slider-thumb {
             -webkit-appearance: none; width: 12px; height: 12px;
             background: var(--accent); border-radius: 50%; cursor: pointer;
         }
-        .slider-val { font-size: 0.62rem; color: var(--accent); min-width: 24px; text-align: right; }
-
-        /* ── ANIMATION PANEL (RIGHT SIDE) ── */
-        #anim-panel { left: auto; right: 14px; width: 240px; }
+        .slider-val { font-size: 0.62rem; color: var(--accent); min-width: 24px; text-align: right; font-weight: bold; }
 
         .pattern-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-bottom: 10px; }
         .pattern-btn {
@@ -172,8 +169,41 @@
         .pattern-btn.active { border-color: var(--accent); background: rgba(232,255,71,0.08); color: var(--accent); }
         .pattern-btn .icon { font-size: 1.2rem; display: block; margin-bottom: 4px; }
 
-        .play-stop { display: flex; gap: 8px; margin-top: 10px; }
-        .play-stop .btn { flex: 1; text-align: center; padding: 8px 0; font-size: 0.75rem; }
+        .play-stop { display: flex; gap: 8px; margin-top: 14px; }
+        .play-stop .btn { flex: 1; padding: 10px 0; font-size: 0.75rem; }
+
+        /* ── MAIN AREA ── */
+        #main-area {
+            position: relative;
+            flex: 1;
+            height: 100vh;
+            overflow: hidden;
+            background: var(--bg);
+        }
+
+        #canvas-container {
+            position: absolute; inset: 0; z-index: 0;
+        }
+
+        /* ── TOP BAR (Dentro da Main Area) ── */
+        #topbar {
+            position: absolute; top: 0; left: 0; right: 0; z-index: 20;
+            display: flex; align-items: center; gap: 8px;
+            padding: 10px 14px;
+            background: rgba(11,12,16,0.7);
+            backdrop-filter: blur(8px);
+            border-bottom: 1px solid var(--border);
+            overflow-x: auto;
+        }
+
+        .transform-group {
+            display: flex; border: 1px solid var(--border); border-radius: 8px; overflow: hidden; flex-shrink: 0;
+        }
+        .transform-group .tab-btn { padding: 6px 12px; }
+
+        .divider { width: 1px; height: 24px; background: var(--border); flex-shrink: 0; margin: 0 4px; }
+        
+        .topbar-actions { display: flex; gap: 6px; margin-left: auto; align-items: center; flex-shrink: 0; }
 
         /* ── NOTIFICATIONS ── */
         #notif {
@@ -182,6 +212,7 @@
             color: var(--accent); font-size: 0.72rem; padding: 8px 20px;
             border-radius: 20px; z-index: 100; opacity: 0;
             transition: opacity .3s; pointer-events: none; white-space: nowrap;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.5);
         }
         #notif.show { opacity: 1; }
 
@@ -219,160 +250,161 @@
 </head>
 <body>
 
-<div id="canvas-container"></div>
-
-<!-- TOP BAR -->
-<div id="topbar">
-    <div class="brand">Anima <span>3D</span></div>
-    <div class="divider"></div>
-
-    <div class="tab-group">
+<!-- SIDEBAR -->
+<div id="sidebar">
+    <div class="sidebar-header">
+        <div class="brand">Anima <span>3D</span></div>
+    </div>
+    <div class="sidebar-tabs">
         <button class="tab-btn active" onclick="switchTab('build')" id="tab-build">🏗 CRIAR</button>
         <button class="tab-btn" onclick="switchTab('anim')" id="tab-anim">🎬 ANIMAR</button>
     </div>
 
-    <div class="divider"></div>
-
-    <div class="tab-group" id="transform-tabs">
-        <button class="tab-btn active" id="t-move" onclick="setMode('translate')">↔ Mover</button>
-        <button class="tab-btn" id="t-rot" onclick="setMode('rotate')">↻ Girar</button>
-        <button class="tab-btn" id="t-scale" onclick="setMode('scale')">⤡ Escalar</button>
-    </div>
-
-    <div class="topbar-actions">
-        <button class="btn" onclick="zoomToFit()" title="Ajustar visão">⛶</button>
-        <button class="btn" onclick="resetCamera()" title="Reset câmera">🏠</button>
-        <div class="divider"></div>
-        <label class="btn" title="Importar Coordenadas CSV">📂 CSV<input type="file" accept=".csv" onchange="importCSV(event)"></label>
-        <button class="btn success" onclick="exportCSV()" title="Salvar matrizes de coordenadas">⬇ CSV</button>
-        <button class="btn success" onclick="exportSVG()" title="Exportar cena como vetor 2D SVG">🖼 SVG</button>
-        <button class="btn primary" onclick="exportHTML(false)" title="Salvar widget embed HTML (Estático)">💾 HTML (Estático)</button>
-        <button class="btn primary" onclick="exportHTML(true)" title="Salvar widget embed HTML (Com Animação)">🎬 HTML (Animado)</button>
-        <button class="btn danger" onclick="clearScene()" title="Limpar tudo">🗑</button>
-    </div>
-</div>
-
-<!-- BUILD PANEL -->
-<div class="panel active" id="build-panel">
-    
-    <!-- Imagem para 3D (VOXELS) -->
-    <div class="section">
-        <h3>🖼 Imagem → 3D (Voxels)</h3>
-        <div class="info-box">Converte a imagem em blocos 3D precisos. Mantém o formato e cores exatas.</div>
+    <!-- BUILD PANEL -->
+    <div class="panel active" id="build-panel">
         
-        <div class="field-row">
-            <label title="Define o quão detalhada a imagem 3D será. Valores altos podem pesar.">Resolução</label>
-            <input type="range" id="img-res" min="10" max="80" step="1" value="35" oninput="document.getElementById('sv-res').textContent=this.value">
-            <span class="slider-val" id="sv-res">35</span>
-        </div>
-        
-        <div class="field-row">
-            <label title="Limiar de Extração: Pixels com transparência abaixo deste valor são ignorados.">Limiar Alfa</label>
-            <input type="range" id="img-thresh" min="1" max="255" step="1" value="50" oninput="document.getElementById('sv-thresh').textContent=this.value">
-            <span class="slider-val" id="sv-thresh">50</span>
-        </div>
+        <div class="section">
+            <h3>🖼 Imagem → 3D (Voxels)</h3>
+            <div class="info-box">Converte a imagem em blocos 3D precisos. Mantém o formato e cores exatas.</div>
+            
+            <div class="field-row">
+                <label title="Define o quão detalhada a imagem 3D será. Valores altos podem pesar.">Resolução</label>
+                <input type="range" id="img-res" min="10" max="80" step="1" value="35" oninput="document.getElementById('sv-res').textContent=this.value">
+                <span class="slider-val" id="sv-res">35</span>
+            </div>
+            
+            <div class="field-row">
+                <label title="Limiar de Extração: Pixels com transparência abaixo deste valor são ignorados.">Limiar Alfa</label>
+                <input type="range" id="img-thresh" min="1" max="255" step="1" value="50" oninput="document.getElementById('sv-thresh').textContent=this.value">
+                <span class="slider-val" id="sv-thresh">50</span>
+            </div>
 
-        <div class="field-row" style="margin: 12px 0;">
-            <label style="min-width:auto; cursor:pointer; color:var(--text); font-size:0.65rem; display:flex; align-items:center; gap:6px;">
-                <input type="checkbox" id="lock-group" checked>
-                Travar agrupamento da imagem
+            <div class="field-row" style="margin: 12px 0;">
+                <label style="min-width:auto; cursor:pointer; color:var(--text); font-size:0.65rem; display:flex; align-items:center; gap:6px;">
+                    <input type="checkbox" id="lock-group" checked>
+                    Travar agrupamento da imagem
+                </label>
+            </div>
+
+            <label class="btn full-btn primary" style="cursor:pointer; display:block;">
+                🖼 Upload Imagem
+                <input type="file" accept="image/*" onchange="handleImageUpload(event)">
             </label>
         </div>
 
-        <label class="btn full-btn primary" style="cursor:pointer; display:block;">
-            🖼 Upload Imagem
-            <input type="file" accept="image/*" onchange="handleImageUpload(event)">
-        </label>
-    </div>
-
-    <!-- Formas -->
-    <div class="section">
-        <h3>Adicionar Formas Básicas</h3>
-        <div class="btn-grid">
-            <button class="btn" onclick="addShape('box')">⬛ Caixa</button>
-            <button class="btn" onclick="addShape('sphere')">⚪ Esfera</button>
-            <button class="btn" onclick="addShape('cylinder')">🛢 Cilindro</button>
-            <button class="btn" onclick="addShape('cone')">🔺 Cone</button>
-        </div>
-    </div>
-
-    <!-- Propriedades -->
-    <div class="section" id="props-section" style="opacity:.4; pointer-events:none;">
-        <h3>Propriedades da Seleção</h3>
-        <div class="field-row">
-            <label>Cor</label>
-            <input type="color" id="color-picker" value="#47c4ff" onchange="changeColor(this.value)">
-        </div>
-        <div class="field-row">
-            <label>Z Pos</label>
-            <div style="display:flex; gap:4px; flex:1;">
-                <button class="btn" style="flex:1;font-size:.62rem;" onclick="moveZ(-1)">↙ Fundo</button>
-                <button class="btn" style="flex:1;font-size:.62rem;" onclick="moveZ(1)">↗ Frente</button>
+        <div class="section">
+            <h3>Adicionar Formas Básicas</h3>
+            <div class="btn-grid">
+                <button class="btn" onclick="addShape('box')">⬛ Caixa</button>
+                <button class="btn" onclick="addShape('sphere')">⚪ Esfera</button>
+                <button class="btn" onclick="addShape('cylinder')">🛢 Cilindro</button>
+                <button class="btn" onclick="addShape('cone')">🔺 Cone</button>
             </div>
         </div>
-        <button class="btn danger full-btn" style="font-size:.65rem; margin-top: 8px;" onclick="deleteSelected()">🗑 Deletar Selecionado</button>
-    </div>
-</div>
 
-<!-- ANIMATION PANEL -->
-<div class="panel" id="anim-panel">
-    <div class="section">
-        <h3>Padrão de Animação (Sutil)</h3>
-        <div class="info-box">Efeitos leves centrados na forma original para não desfigurar o modelo.</div>
-        <div class="pattern-grid">
-            <div class="pattern-btn active" onclick="selectPattern('wave')" id="pat-wave">
-                <span class="icon">〰️</span>Onda
+        <div class="section" id="props-section" style="opacity:.4; pointer-events:none;">
+            <h3>Propriedades da Seleção</h3>
+            <div class="field-row">
+                <label>Cor</label>
+                <input type="color" id="color-picker" value="#47c4ff" onchange="changeColor(this.value)">
             </div>
-            <div class="pattern-btn" onclick="selectPattern('spin')" id="pat-spin">
-                <span class="icon">🌀</span>Giro
+            <div class="field-row">
+                <label>Z Pos</label>
+                <div style="display:flex; gap:4px; flex:1;">
+                    <button class="btn" style="flex:1;font-size:.62rem;" onclick="moveZ(-1)">↙ Fundo</button>
+                    <button class="btn" style="flex:1;font-size:.62rem;" onclick="moveZ(1)">↗ Frente</button>
+                </div>
             </div>
-            <div class="pattern-btn" onclick="selectPattern('explode')" id="pat-explode">
-                <span class="icon">💥</span>Pulsação
-            </div>
-            <div class="pattern-btn" onclick="selectPattern('pulse')" id="pat-pulse">
-                <span class="icon">💓</span>Brilho
-            </div>
-            <div class="pattern-btn" onclick="selectPattern('float')" id="pat-float">
-                <span class="icon">🎈</span>Flutuar
-            </div>
-            <div class="pattern-btn" onclick="selectPattern('chaos')" id="pat-chaos">
-                <span class="icon">⚡</span>Tremor
-            </div>
-            <div class="pattern-btn" onclick="selectPattern('helix')" id="pat-helix">
-                <span class="icon">🧬</span>Hélice
-            </div>
-            <div class="pattern-btn" onclick="selectPattern('bounce')" id="pat-bounce">
-                <span class="icon">🏀</span>Salto
-            </div>
+            <button class="btn danger full-btn" style="font-size:.65rem; margin-top: 8px;" onclick="deleteSelected()">🗑 Deletar Selecionado</button>
         </div>
     </div>
 
-    <div class="section">
-        <h3>Controles</h3>
-        <div class="slider-row" style="margin-bottom:8px;">
-            <label>Velocidade</label>
-            <input type="range" id="sl-speed" min="0.1" max="3" step="0.1" value="1" oninput="animParams.speed=+this.value; document.getElementById('sv-speed').textContent=this.value">
-            <span class="slider-val" id="sv-speed">1</span>
-        </div>
-        <div class="slider-row">
-            <label>Câmera Auto</label>
-            <input type="range" id="sl-cam" min="0" max="1" step="0.1" value="0.3" oninput="animParams.camSpeed=+this.value; document.getElementById('sv-cam').textContent=this.value">
-            <span class="slider-val" id="sv-cam">0.3</span>
+    <!-- ANIMATION PANEL -->
+    <div class="panel" id="anim-panel">
+        <div class="section">
+            <h3>Padrão de Animação (Sutil)</h3>
+            <div class="info-box">Efeitos leves centrados na forma original para não desfigurar o modelo.</div>
+            <div class="pattern-grid">
+                <div class="pattern-btn active" onclick="selectPattern('wave')" id="pat-wave">
+                    <span class="icon">〰️</span>Onda
+                </div>
+                <div class="pattern-btn" onclick="selectPattern('spin')" id="pat-spin">
+                    <span class="icon">🌀</span>Giro
+                </div>
+                <div class="pattern-btn" onclick="selectPattern('explode')" id="pat-explode">
+                    <span class="icon">💥</span>Pulsação
+                </div>
+                <div class="pattern-btn" onclick="selectPattern('pulse')" id="pat-pulse">
+                    <span class="icon">💓</span>Brilho
+                </div>
+                <div class="pattern-btn" onclick="selectPattern('float')" id="pat-float">
+                    <span class="icon">🎈</span>Flutuar
+                </div>
+                <div class="pattern-btn" onclick="selectPattern('chaos')" id="pat-chaos">
+                    <span class="icon">⚡</span>Tremor
+                </div>
+                <div class="pattern-btn" onclick="selectPattern('helix')" id="pat-helix">
+                    <span class="icon">🧬</span>Hélice
+                </div>
+                <div class="pattern-btn" onclick="selectPattern('bounce')" id="pat-bounce">
+                    <span class="icon">🏀</span>Salto
+                </div>
+            </div>
         </div>
 
-        <div class="play-stop">
-            <button class="btn primary" id="play-btn" onclick="toggleAnim()">▶ PLAY</button>
-            <button class="btn" onclick="resetAnim()">⏹ RESET</button>
+        <div class="section">
+            <h3>Controles</h3>
+            <div class="slider-row" style="margin-bottom:12px;">
+                <label>Velocidade</label>
+                <input type="range" id="sl-speed" min="0.1" max="3" step="0.1" value="1" oninput="animParams.speed=+this.value; document.getElementById('sv-speed').textContent=this.value">
+                <span class="slider-val" id="sv-speed">1</span>
+            </div>
+            <div class="slider-row">
+                <label>Câmera Auto</label>
+                <input type="range" id="sl-cam" min="0" max="1" step="0.1" value="0.3" oninput="animParams.camSpeed=+this.value; document.getElementById('sv-cam').textContent=this.value">
+                <span class="slider-val" id="sv-cam">0.3</span>
+            </div>
+
+            <div class="play-stop">
+                <button class="btn primary" id="play-btn" onclick="toggleAnim()">▶ PLAY</button>
+                <button class="btn" onclick="resetAnim()">⏹ RESET</button>
+            </div>
         </div>
     </div>
 </div>
 
-<div id="notif"></div>
-<div id="mode-indicator">↔ MOVER · clique para selecionar</div>
+<!-- MAIN WORKSPACE -->
+<div id="main-area">
+    <div id="canvas-container"></div>
+    
+    <div id="topbar">
+        <div class="transform-group" id="transform-tabs">
+            <button class="tab-btn active" id="t-move" onclick="setMode('translate')">↔ Mover</button>
+            <button class="tab-btn" id="t-rot" onclick="setMode('rotate')">↻ Girar</button>
+            <button class="tab-btn" id="t-scale" onclick="setMode('scale')">⤡ Escalar</button>
+        </div>
 
-<div id="loading-overlay">
-    <div class="spinner"></div>
-    <span style="font-size:.72rem;color:var(--muted)" id="loading-text">Processando...</span>
+        <div class="topbar-actions">
+            <button class="btn" onclick="zoomToFit()" title="Ajustar visão">⛶</button>
+            <button class="btn" onclick="resetCamera()" title="Reset câmera">🏠</button>
+            <div class="divider"></div>
+            <label class="btn" title="Importar Coordenadas CSV">📂 CSV<input type="file" accept=".csv" onchange="importCSV(event)"></label>
+            <button class="btn success" onclick="exportCSV()" title="Salvar matrizes de coordenadas">⬇ CSV</button>
+            <button class="btn success" onclick="exportSVG()" title="Exportar cena como vetor 2D SVG">🖼 SVG</button>
+            <button class="btn primary" onclick="exportHTML(false)" title="Salvar widget embed HTML (Estático)">💾 HTML (Estático)</button>
+            <button class="btn primary" onclick="exportHTML(true)" title="Salvar widget embed HTML (Com Animação)">🎬 HTML (Animado)</button>
+            <button class="btn" style="background:#f98012; color:#fff; border-color:#f98012; font-weight:bold;" onclick="exportMoodleHTML()" title="HTML otimizado para Moodle">🎓 Moodle</button>
+            <button class="btn danger" onclick="clearScene()" title="Limpar tudo">🗑</button>
+        </div>
+    </div>
+
+    <div id="notif"></div>
+    <div id="mode-indicator">↔ MOVER · clique para selecionar</div>
+
+    <div id="loading-overlay">
+        <div class="spinner"></div>
+        <span style="font-size:.72rem;color:var(--muted)" id="loading-text">Processando...</span>
+    </div>
 </div>
 
 <script type="module">
@@ -399,13 +431,15 @@ window.animParams = { speed: 1, intensity: 1.0, camSpeed: 0.3 };
 const raycaster = new THREE.Raycaster();
 const mouse = new THREE.Vector2();
 
+// Define a largura da barra lateral para cálculos de câmara e rato
+const sidebarWidth = 320; 
+
 // ── INIT ──
 function init() {
     const container = document.getElementById('canvas-container');
     scene = new THREE.Scene();
-    scene.background = new THREE.Color(0x0b0c10); // Fundo escuro na edição
+    scene.background = new THREE.Color(0x0b0c10); 
     
-    // Luzes aprimoradas para melhor visualização dos Voxels
     scene.add(new THREE.AmbientLight(0xffffff, 0.7));
     const dir1 = new THREE.DirectionalLight(0xffffff, 1.2);
     dir1.position.set(15, 25, 20);
@@ -414,18 +448,19 @@ function init() {
     dir2.position.set(-15, -15, -20);
     scene.add(dir2);
 
-    // Grid (apenas na edição)
     const grid = new THREE.GridHelper(100, 60, 0x1c1f2b, 0x13151c);
     grid.position.y = -6;
     grid.name = "EditorGrid";
     scene.add(grid);
 
-    camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 10000);
+    const mainWidth = window.innerWidth - sidebarWidth;
+
+    camera = new THREE.PerspectiveCamera(45, mainWidth / window.innerHeight, 0.1, 10000);
     camera.position.set(0, 12, 45);
 
     renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, preserveDrawingBuffer: true });
     renderer.setPixelRatio(window.devicePixelRatio);
-    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.setSize(mainWidth, window.innerHeight);
     container.appendChild(renderer.domElement);
 
     orbit = new OrbitControls(camera, renderer.domElement);
@@ -458,7 +493,6 @@ function animate() {
         }
     }
 
-    // Atualiza Rótulos
     objects.forEach(obj => {
         if (obj.children.length > 0 && obj.children[0].isSprite) {
             obj.children[0].quaternion.copy(camera.quaternion);
@@ -542,14 +576,17 @@ function onKeyDown(e) {
 
 function onPointerDown(e) {
     if (transformCtrl.dragging) return;
-    mouse.x = (e.clientX / window.innerWidth) * 2 - 1;
-    mouse.y = -(e.clientY / window.innerHeight) * 2 + 1;
+    
+    // Calcula o clique baseado no elemento canvas, isolando a barra lateral
+    const rect = renderer.domElement.getBoundingClientRect();
+    mouse.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
+    mouse.y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
+    
     raycaster.setFromCamera(mouse, camera);
     const hits = raycaster.intersectObjects(objects, false);
     
     if (hits.length > 0) {
         let target = hits[0].object;
-        // Se a trava de agrupamento estiver ativa e a peça pertencer a um grupo de imagem
         if (document.getElementById('lock-group').checked && target.parent && target.parent.userData.isImageGroup) {
             target = target.parent;
         }
@@ -657,7 +694,6 @@ window.zoomToFit = function() {
     if (!objects.length) return;
     const box = new THREE.Box3();
     objects.forEach(o => {
-        // Garantir que a posição do mundo é capturada caso estejam agrupados
         o.updateWorldMatrix(true, false);
         box.expandByObject(o);
     });
@@ -688,7 +724,7 @@ window.clearScene = function() {
     notify('Cena limpa');
 };
 
-// ── IMAGE TO 3D (VOXELS EXATOS COM AGRUPAMENTO) ──
+// ── IMAGE TO 3D (VOXELS) ──
 window.handleImageUpload = function(e) {
     const file = e.target.files[0]; if (!file) return;
     document.getElementById('loading-text').textContent = 'Processando voxels da imagem...';
@@ -735,7 +771,6 @@ function processImageToVoxels(img, resolution, alphaThresh) {
     
     let added = 0;
     
-    // Cria o Grupo para agrupar as peças da imagem
     const imageGroup = new THREE.Group();
     imageGroup.userData = { isImageGroup: true, id: elementCounter++ };
     scene.add(imageGroup);
@@ -801,12 +836,11 @@ window.importCSV = function(e) {
     e.target.value = '';
 };
 
-// ── EXPORT CSV (Agora com posições globais) ──
+// ── EXPORT CSV ──
 window.exportCSV = function() {
     if (!objects.length) { notify('Cena vazia!'); return; }
     let csv = "ID,Rotulo,Tipo,PosX,PosY,PosZ,RotX_deg,RotY_deg,RotZ_deg,EscalaX,EscalaY,EscalaZ,CorHex\n";
     objects.forEach(obj => {
-        // Obter valores globais na cena para exportar corretamente peças de grupos rotacionados
         const wp = new THREE.Vector3();
         const wq = new THREE.Quaternion();
         const ws = new THREE.Vector3();
@@ -832,14 +866,14 @@ window.exportSVG = function() {
     
     setTimeout(() => {
         const svgRenderer = new SVGRenderer();
-        svgRenderer.setSize(window.innerWidth, window.innerHeight);
+        // Apanha o tamanho real da área da tela (excluindo a barra lateral)
+        const mainWidth = window.innerWidth - sidebarWidth;
+        svgRenderer.setSize(mainWidth, window.innerHeight);
         
-        // Esconder elementos de edição para a foto vetorial
         const grid = scene.getObjectByName("EditorGrid");
         if (grid) grid.visible = false;
         transformCtrl.detach();
         
-        // Trocar para MeshBasicMaterial temporariamente (SVGRenderer lida melhor com cores flat)
         const originals = new Map();
         scene.traverse(child => {
             if (child.isMesh && child.material) {
@@ -851,7 +885,6 @@ window.exportSVG = function() {
         
         svgRenderer.render(scene, camera);
         
-        // Restaurar estado da cena
         scene.traverse(child => {
             if (originals.has(child)) child.material = originals.get(child);
             if (child.isSprite) child.visible = true;
@@ -869,8 +902,7 @@ window.exportSVG = function() {
     }, 50);
 };
 
-
-// ── EXPORT WIDGET HTML (Para Professores) ──
+// ── EXPORT WIDGET HTML (Animado ou Estático) ──
 window.exportHTML = function(animated = true) {
     if (!objects.length) { notify('Cena vazia!'); return; }
 
@@ -900,10 +932,8 @@ window.exportHTML = function(animated = true) {
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Widget 3D</title>
-<!-- Favicon incorporado conforme padrão -->
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎬</text></svg>">
 <style>
-  /* Fundo 100% transparente para incorporar perfeitamente no material didático */
   body { margin:0; overflow:hidden; background:transparent; }
   canvas { display: block; outline: none; }
 </style>
@@ -933,7 +963,6 @@ const objects = [];
 const basePos = [];
 const baseSc = [];
 
-// Geometria única compartilhada para otimizar desempenho
 const geo = new THREE.BoxGeometry(1,1,1);
 
 data.forEach(d => {
@@ -951,14 +980,13 @@ window.addEventListener('resize',()=>{ camera.aspect=innerWidth/innerHeight; cam
 
 ${animated ? `
 let t=0;
-const pattern='${pattern}', speed=${speed}, I=0.15; // Intensidade sutil
+const pattern='${pattern}', speed=${speed}, I=0.15;
 
 (function loop(){
   requestAnimationFrame(loop);
   orbit.update();
   t += 0.016 * speed;
   
-  // Auto-rotação contínua da câmera para exibir o objeto como um todo
   camera.position.x = camera.position.x * Math.cos(0.005) + camera.position.z * Math.sin(0.005);
   camera.position.z = camera.position.z * Math.cos(0.005) - camera.position.x * Math.sin(0.005);
   camera.lookAt(0,0,0);
@@ -982,16 +1010,12 @@ const pattern='${pattern}', speed=${speed}, I=0.15; // Intensidade sutil
   renderer.render(scene,camera);
 })();
 ` : `
-// Loop Estático (Sem alteração de posição/padrões)
 (function loop(){
   requestAnimationFrame(loop);
   orbit.update();
-  
-  // Auto-rotação contínua da câmera
   camera.position.x = camera.position.x * Math.cos(0.005) + camera.position.z * Math.sin(0.005);
   camera.position.z = camera.position.z * Math.cos(0.005) - camera.position.x * Math.sin(0.005);
   camera.lookAt(0,0,0);
-
   renderer.render(scene,camera);
 })();
 `}
@@ -1001,6 +1025,132 @@ const pattern='${pattern}', speed=${speed}, I=0.15; // Intensidade sutil
 
     downloadBlob(new Blob([html], {type:'text/html'}), `widget_3d_${nameSuffix}.html`);
     notify('Widget HTML exportado ✓');
+};
+
+// ── EXPORT MOODLE HTML (Sem ES Modules) ──
+window.exportMoodleHTML = function() {
+    if (!objects.length) { notify('Cena vazia!'); return; }
+
+    const objData = objects.map(obj => {
+        const wp = new THREE.Vector3();
+        const wq = new THREE.Quaternion();
+        const ws = new THREE.Vector3();
+        obj.getWorldPosition(wp);
+        obj.getWorldQuaternion(wq);
+        obj.getWorldScale(ws);
+        const we = new THREE.Euler().setFromQuaternion(wq);
+        return {
+            p: { x: wp.x, y: wp.y, z: wp.z },
+            r: { x: we.x, y: we.y, z: we.z },
+            s: { x: ws.x, y: ws.y, z: ws.z },
+            c: '#' + obj.material.color.getHexString()
+        };
+    });
+
+    const pattern = currentPattern;
+    const speed = animParams.speed;
+
+    const html = `<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Widget 3D (Moodle)</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎬</text></svg>">
+<style>
+  body { margin:0; overflow:hidden; background:transparent; }
+  canvas { display: block; outline: none; }
+</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"><\/script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"><\/script>
+</head>
+<body>
+<script>
+const scene = new THREE.Scene();
+scene.add(new THREE.AmbientLight(0xffffff, 0.7));
+const d = new THREE.DirectionalLight(0xffffff,1.2); d.position.set(15,25,20); scene.add(d);
+const f = new THREE.DirectionalLight(0xffffff,0.5); f.position.set(-15,-15,-20); scene.add(f);
+
+const camera = new THREE.PerspectiveCamera(45, innerWidth/innerHeight, 0.1, 10000);
+camera.position.set(0,0,55);
+
+const renderer = new THREE.WebGLRenderer({antialias:true, alpha:true});
+renderer.setPixelRatio(window.devicePixelRatio); renderer.setSize(innerWidth,innerHeight);
+document.body.appendChild(renderer.domElement);
+const orbit = new THREE.OrbitControls(camera, renderer.domElement);
+orbit.enableDamping = true;
+
+const data = ${JSON.stringify(objData)};
+const objects = [];
+const basePos = [];
+const baseSc = [];
+
+const geo = new THREE.BoxGeometry(1,1,1);
+
+data.forEach(d => {
+  const mat = new THREE.MeshStandardMaterial({color:d.c, roughness:0.5});
+  const mesh = new THREE.Mesh(geo,mat);
+  mesh.position.set(d.p.x,d.p.y,d.p.z);
+  mesh.rotation.set(d.r.x,d.r.y,d.r.z);
+  mesh.scale.set(d.s.x,d.s.y,d.s.z);
+  scene.add(mesh); objects.push(mesh);
+  basePos.push(mesh.position.clone());
+  baseSc.push({x:mesh.scale.x,y:mesh.scale.y,z:mesh.scale.z});
+});
+
+window.addEventListener('resize',()=>{ camera.aspect=innerWidth/innerHeight; camera.updateProjectionMatrix(); renderer.setSize(innerWidth,innerHeight); });
+
+let t=0;
+const pattern='${pattern}', speed=${speed}, I=0.15;
+
+(function loop(){
+  requestAnimationFrame(loop);
+  orbit.update();
+  t += 0.016 * speed;
+  
+  camera.position.x = camera.position.x * Math.cos(0.005) + camera.position.z * Math.sin(0.005);
+  camera.position.z = camera.position.z * Math.cos(0.005) - camera.position.x * Math.sin(0.005);
+  camera.lookAt(0,0,0);
+
+  objects.forEach((obj,i)=>{
+    const bp=basePos[i], bs=baseSc[i], ph=(bp.x*0.1)+(bp.y*0.1);
+    switch(pattern){
+      case 'wave': obj.position.y=bp.y+Math.sin(t*3+ph)*I*2; break;
+      case 'spin': obj.rotation.y=Math.sin(t*2+ph)*I*3; break;
+      case 'explode':{
+        const dist = Math.sqrt(bp.x*bp.x + bp.y*bp.y + bp.z*bp.z) || 1;
+        const push = Math.sin(t*2)*I*2;
+        obj.position.x=bp.x+(bp.x/dist)*push; obj.position.y=bp.y+(bp.y/dist)*push; break;}
+      case 'pulse':{ const sc=1+Math.sin(t*4+ph)*0.2; obj.scale.set(bs.x*sc,bs.y*sc,bs.z*sc); break;}
+      case 'float': obj.position.y=bp.y+Math.sin(t*1.5+ph)*I*1.5; obj.position.x=bp.x+Math.cos(t*1.2+ph)*I*1.0; break;
+      case 'chaos': obj.position.x=bp.x+(Math.random()-0.5)*I*1.5; obj.position.y=bp.y+(Math.random()-0.5)*I*1.5; break;
+      case 'helix': obj.position.z=bp.z+Math.sin(t*3+ph)*I*5; break;
+      case 'bounce': obj.position.y=bp.y+Math.abs(Math.sin(t*3+ph))*I*3; break;
+    }
+  });
+  renderer.render(scene,camera);
+})();
+<\/script>
+</body>
+</html>`;
+
+    downloadBlob(new Blob([html], {type:'text/html'}), 'moodle_widget_3d.html');
+    
+    const modal = document.createElement('div');
+    modal.style.cssText = "position:fixed; top:50%; left:50%; transform:translate(-50%,-50%); background:#1c1f2b; padding:20px; border-radius:10px; border:2px solid #f98012; z-index:9999; color:#fff; width:340px; text-align:center; font-family:monospace; box-shadow:0 10px 40px rgba(0,0,0,0.8);";
+    modal.innerHTML = `
+        <h3 style="color:#f98012; margin-top:0; margin-bottom:10px;">🎓 Exportado para Moodle!</h3>
+        <p style="font-size:0.75rem; text-align:left; color:#ccc; line-height:1.4;">O Moodle apaga códigos 3D copiados diretamente para o editor de texto. Para integrar corretamente, siga estes passos:</p>
+        <ol style="font-size:0.75rem; text-align:left; padding-left:20px; color:#aaa; line-height:1.6;">
+            <li>No Moodle, clique em <i>Adicionar uma atividade ou recurso</i>.</li>
+            <li>Escolha a opção <b>Ficheiro (ou Arquivo)</b>.</li>
+            <li>Faça o upload deste HTML que acabou de ser baixado.</li>
+            <li>Na secção <i>Aparência</i>, escolha <b>Incorporar (Embed)</b>.</li>
+        </ol>
+        <button onclick="this.parentElement.remove()" style="margin-top:15px; background:#f98012; color:#000; border:none; padding:8px 16px; border-radius:6px; cursor:pointer; font-weight:bold; font-family:'Space Mono', monospace;">Entendido!</button>
+    `;
+    document.body.appendChild(modal);
+    notify('Ficheiro HTML gerado com sucesso ✓');
 };
 
 function downloadBlob(blob, name) {
@@ -1044,7 +1194,6 @@ window.switchTab = function(tab) {
     document.getElementById('anim-panel').classList.toggle('active', tab === 'anim');
     document.getElementById('tab-build').classList.toggle('active', tab === 'build');
     document.getElementById('tab-anim').classList.toggle('active', tab === 'anim');
-    document.getElementById('transform-tabs').style.display = tab === 'build' ? '' : 'none';
 };
 
 function notify(msg) {
@@ -1054,9 +1203,10 @@ function notify(msg) {
 }
 
 function onResize() {
-    camera.aspect = window.innerWidth / window.innerHeight;
+    const mainWidth = window.innerWidth - sidebarWidth;
+    camera.aspect = mainWidth / window.innerHeight;
     camera.updateProjectionMatrix();
-    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.setSize(mainWidth, window.innerHeight);
 }
 
 init();
